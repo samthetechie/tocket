@@ -5,7 +5,7 @@ tocket
 
 Description
 -----------
-Relay Switch Power Socket over a Tor Hidden Service
+Relay Switched Power Socket over a Tor Hidden Service
 
 
 Documentation
