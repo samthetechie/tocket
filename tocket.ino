@@ -2,24 +2,27 @@
 #include "EtherShield.h"
 #include <math.h>
 #define ThermistorPIN 0                 // Analog Pin 0
+#define neutralPIN 12
+#define livePIN 11
                                         // set to the measured Vcc.
 float pad = 10950;                       // balance/pad resistor value, set this to
                                          // the measured resistance of your pad resistor
 float thermr = 10000;                   // thermistor nominal resistance
 char tempBuf[32] = {0};
 float temp;
+boolean statepins = 0;
+
 float Thermistor(int RawADC) {
-long Resistance;  
-float Temp;  // Dual-Purpose variable to save space.
-
-Resistance=((1024 * pad / RawADC) - pad); 
-Temp = log(Resistance); // Saving the Log(resistance) so not to calculate  it 4 times later
-Temp = 1 / (0.001129148 + (0.000234125 * Temp) + (0.0000000876741 * Temp * Temp * Temp));
-Temp = Temp - 273.15;  // Convert Kelvin to Celsius                      
-
-// Uncomment this line for the function to return Fahrenheit instead.
-//temp = (Temp * 9.0)/ 5.0 + 32.0;                  // Convert to Fahrenheit
-return Temp;                                      // Return the Temperature
+  long Resistance;  
+  float Temp;  // Dual-Purpose variable to save space.
+  //Resistance=((1024 * pad / RawADC) - pad); 
+  //Temp = log(Resistance); // Saving the Log(resistance) so not to calculate  it 4 times later
+  //Temp = 1 / (0.001129148 + (0.000234125 * Temp) + (0.0000000876741 * Temp * Temp * Temp));
+  //Temp = Temp - 273.15;  // Convert Kelvin to Celsius                      
+  Temp = RawADC;
+  // Uncomment this line for the function to return Fahrenheit instead.
+  //temp = (Temp * 9.0)/ 5.0 + 32.0;                  // Convert to Fahrenheit
+  return Temp;                                      // Return the Temperature
 }
 
 static uint8_t mymac[6] = {0x4e,0x41,0x4e,0x4f,0x44,0x00 };
@@ -47,6 +50,22 @@ uint16_t http200ok(void)
   return(es.ES_fill_tcp_data_p(buf,0,PSTR("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\nPragma: no-cache\r\n\r\n")));
 }
 
+void togglePins()
+{
+  statepins = !statepins;
+  if (statepins)
+  {
+    digitalWrite(neutralPIN, HIGH);
+    digitalWrite(livePIN, HIGH);
+  }
+  
+  else
+  { 
+    digitalWrite(neutralPIN, LOW);
+    digitalWrite(livePIN, LOW);
+  }
+}
+
 void print_mac(uint8_t *buf, uint16_t *plen, uint8_t *mac) {
   char msg[18] = {
     0  };
@@ -67,10 +86,10 @@ uint16_t print_webpage(uint8_t *buf)
   plen=http200ok();
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<html><head><title>Your Tocket is alive!</title></head><body>"));
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<center><h1>Congratulations! Your tocket is online!</h1>"));
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<hr><p>Your <a href=\"https://github.com/samthetechie/tocket/\">tocket</a> is now "));
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<hr><p>Your <a href=\"https://github.com/samthetechie/tocket/\" target=\"_self\">tocket</a> is now "));
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("happily connected to your network and serving simple web pages. Let's switch some stuff on and off already."));
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<br>In't that exciting?</p>"));
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<p><strong>Temperature:</strong> "));  
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<p><strong>Analog0 reading:</strong> "));  
   plen=es.ES_fill_tcp_data(buf, plen, tempBuf); //print the temperature buffer to the webpage buffer
   
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("</p></center><hr>"));
@@ -92,7 +111,7 @@ uint16_t print_webpage(uint8_t *buf)
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR(" ms since boot"));
 
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("</p><hr>"));
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<p style=\"text-align:right;color:#999\">Sketch v1 <a href=\"http://nanode.eu\">nanode.eu</a></p>"));
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<p style=\"text-align:right;color:#999\">Sketch v1.0 <a href=\"https://github.com/samthetechie/tocket\">tocket on github.com</a></p>"));
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("</body></html>"));
 
   return(plen);
@@ -212,6 +231,7 @@ void loop(){
     if (strncmp("GET ",(char *)&(buf[dat_p]),4)!=0){
       // head, post and other methods:
       dat_p=http200ok();
+      togglePins();
       dat_p=es.ES_fill_tcp_data_p(buf,dat_p,PSTR("<h1>200 OK</h1>"));
       goto SENDTCP;
     }
