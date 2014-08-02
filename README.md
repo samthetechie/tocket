@@ -1,6 +1,8 @@
 tocket
 ======
 
+![tocket-logo](https://raw.githubusercontent.com/samthetechie/tocket/master/images/tocket-logo.png)
+
 Description
 -----------
 Relay Switch Power Socket over a Tor Hidden Service
