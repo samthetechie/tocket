@@ -65,10 +65,10 @@ uint16_t print_webpage(uint8_t *buf)
 {
   uint16_t plen;  
   plen=http200ok();
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<html><head><title>Nanode is alive!</title></head><body>"));
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<center><h1>Congratulations! Your Nanode lives!</h1>"));
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<hr><p>Your <a href=\"http://nanode.eu/\">Nanode</a> is now "));
-  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("happily connected to your network and serving simple web pages."));
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<html><head><title>Your Tocket is alive!</title></head><body>"));
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<center><h1>Congratulations! Your tocket is online!</h1>"));
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<hr><p>Your <a href=\"https://github.com/samthetechie/tocket/\">tocket</a> is now "));
+  plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("happily connected to your network and serving simple web pages. Let's switch some stuff on and off already."));
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<br>In't that exciting?</p>"));
   plen=es.ES_fill_tcp_data_p(buf,plen,PSTR("<p><strong>Temperature:</strong> "));  
   plen=es.ES_fill_tcp_data(buf, plen, tempBuf); //print the temperature buffer to the webpage buffer
