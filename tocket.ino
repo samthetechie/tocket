@@ -2,8 +2,8 @@
 #include "EtherShield.h"
 #include <math.h>
 #define ThermistorPIN 0                 // Analog Pin 0
-#define neutralPIN 12
-#define livePIN 11
+#define neutralPIN 3
+#define livePIN 4
                                         // set to the measured Vcc.
 float pad = 10950;                       // balance/pad resistor value, set this to
                                          // the measured resistance of your pad resistor
@@ -55,15 +55,18 @@ void togglePins()
   statepins = !statepins;
   if (statepins)
   {
+    delay(2000);
     digitalWrite(neutralPIN, HIGH);
     digitalWrite(livePIN, HIGH);
   }
   
   else
   { 
+    delay(2000);
     digitalWrite(neutralPIN, LOW);
     digitalWrite(livePIN, LOW);
   }
+
 }
 
 void print_mac(uint8_t *buf, uint16_t *plen, uint8_t *mac) {
@@ -130,7 +133,11 @@ void setup(){
   pinMode(DHCPLED, OUTPUT);
   // LED off: getting ready
   digitalWrite(DHCPLED, HIGH);
-
+  pinMode(neutralPIN, OUTPUT);
+  pinMode(livePIN, OUTPUT);
+  digitalWrite(neutralPIN, LOW);
+  digitalWrite(livePIN, LOW);
+    
   Serial.begin(19200);
   Serial.println("Web server test");
 
@@ -231,11 +238,22 @@ void loop(){
     if (strncmp("GET ",(char *)&(buf[dat_p]),4)!=0){
       // head, post and other methods:
       dat_p=http200ok();
-      togglePins();
+      //togglePins();
       dat_p=es.ES_fill_tcp_data_p(buf,dat_p,PSTR("<h1>200 OK</h1>"));
       goto SENDTCP;
     }
-  
+    togglePins();
+/*
+    Serial.println("Setting Pins LOW");
+    digitalWrite(neutralPIN, LOW);
+    digitalWrite(livePIN, LOW);
+    Serial.println("Delay of 3s");
+    delay(3000);
+    Serial.println("Setting Pins HIGH");
+    digitalWrite(livePIN, HIGH);
+    digitalWrite(neutralPIN, HIGH);
+    delay(3000);
+*/  
     //begin thermistor read
     temp = Thermistor(analogRead(ThermistorPIN));
     dtostrf(temp, 3, 1, tempBuf);
