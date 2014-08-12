@@ -17,9 +17,13 @@ cp2102 pinout
 Nanode -> cp2102 solder on a 1pin to the DTR line
 
 RTS -> DTR
+
 TXD -> rx
+
 RXD -> tx
+
 +5V -> 5V
+
 0V -> gnd
 
 Source: http://wiki.xinchejian.com/wiki/Nanode,_USB_FTDI,_OSX10.7
