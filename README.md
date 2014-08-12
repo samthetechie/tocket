@@ -7,6 +7,9 @@ Description
 -----------
 Relay Switched Power Socket over a Tor Hidden Service
 
+Build Photos
+------------
+http://samthetechie.blogspot.fr/2014/08/tocket-build-photos.html
 
 Documentation
 -------------
